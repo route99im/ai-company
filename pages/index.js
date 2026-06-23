@@ -88,6 +88,8 @@ export default function Home() {
   const [chats, setChats] = useState({});
   const [tasks, setTasks] = useState({ todo:[], doing:[], done:[] });
   const [newTask, setNewTask] = useState('');
+  const [postingMsgId, setPostingMsgId] = useState(null);
+  const [postResults, setPostResults] = useState({});
   const chatEndRef = useRef(null);
 
   useEffect(() => {
@@ -165,6 +167,25 @@ export default function Home() {
       setTasks(prev=>{ const u={...prev,doing:prev.doing.filter(x=>x.id!==taskId),todo:[...prev.todo,newEntry]}; saveLS(TASKS_KEY,u); return u; });
     }
     setLoading(false);
+  };
+
+  const postToThreads = async (text, msgId) => {
+    setPostingMsgId(msgId);
+    try {
+      const res = await fetch('/api/threads-post', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPostResults(p=>({...p,[msgId]:'posted'}));
+      } else {
+        setPostResults(p=>({...p,[msgId]:'error'}));
+      }
+    } catch(e) {
+      setPostResults(p=>({...p,[msgId]:'error'}));
+    }
+    setPostingMsgId(null);
   };
 
   const sendChat = async () => {
@@ -330,8 +351,16 @@ export default function Home() {
                 {(chats[chatAgent]||[]).map((m,i)=>(
                   <div key={i} style={{display:'flex',flexDirection:m.role==='user'?'row-reverse':'row',gap:6,alignItems:'flex-end'}}>
                     {m.role==='assistant'&&<div style={{width:24,height:24,borderRadius:6,background:AGENTS[chatAgent].bg,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,flexShrink:0}}>{AGENTS[chatAgent].emoji}</div>}
-                    <div style={{maxWidth:'80%',padding:'8px 11px',borderRadius:m.role==='user'?'10px 10px 2px 10px':'10px 10px 10px 2px',background:m.role==='user'?AGENTS[chatAgent].accent:'#F1F5F9',color:m.role==='user'?'#fff':'#0F172A',fontSize:12,lineHeight:1.6,whiteSpace:'pre-wrap'}}>
-                      {m.content}
+                    <div style={{maxWidth:'80%'}}>
+                      <div style={{padding:'8px 11px',borderRadius:m.role==='user'?'10px 10px 2px 10px':'10px 10px 10px 2px',background:m.role==='user'?AGENTS[chatAgent].accent:'#F1F5F9',color:m.role==='user'?'#fff':'#0F172A',fontSize:12,lineHeight:1.6,whiteSpace:'pre-wrap'}}>
+                        {m.content}
+                      </div>
+                      {m.role==='assistant'&&(
+                        <button onClick={()=>postToThreads(m.content, i)} disabled={postingMsgId===i||postResults[i]==='posted'}
+                          style={{marginTop:4,fontSize:10,padding:'3px 8px',border:'0.5px solid #E2E8F0',borderRadius:6,background:postResults[i]==='posted'?'#F0FDF4':postResults[i]==='error'?'#FEF2F2':'#fff',color:postResults[i]==='posted'?'#16A34A':postResults[i]==='error'?'#DC2626':'#64748B',cursor:postingMsgId===i?'not-allowed':'pointer',display:'flex',alignItems:'center',gap:4}}>
+                          {postResults[i]==='posted'?'✓ 스레드 게시됨':postResults[i]==='error'?'❌ 오류':postingMsgId===i?'게시 중...':'🧵 스레드에 올리기'}
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -1,0 +1,260 @@
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #1a1a1a;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* 조직도 */
+.org {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.agentCard {
+  flex: 1;
+  min-width: 120px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.agentCard.working {
+  border-color: #378ADD;
+  border-width: 2px;
+  transform: scale(1.03);
+}
+
+.agentCard.done {
+  border-color: #1D9E75;
+  border-width: 2px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin: 0 auto 8px;
+}
+
+.agentName {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.agentRole {
+  font-size: 11px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.status {
+  font-size: 10px;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #f5f5f5;
+  color: #888;
+  display: inline-block;
+}
+
+.statusWorking {
+  background: #EBF5FF;
+  color: #1a73e8;
+}
+
+.statusDone {
+  background: #E8F5E9;
+  color: #1D9E75;
+}
+
+/* 입력창 */
+.inputBox {
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.label {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #378ADD;
+}
+
+.button {
+  padding: 10px 20px;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.button:hover {
+  background: #333;
+}
+
+.button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.preset {
+  font-size: 11px;
+  padding: 4px 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+}
+
+.preset:hover {
+  background: #f0f0f0;
+}
+
+/* 로그 */
+.log {
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.logHeader {
+  padding: 10px 16px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #e5e5e5;
+  font-size: 13px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4CAF50;
+  display: inline-block;
+}
+
+.messages {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.empty {
+  text-align: center;
+  color: #aaa;
+  font-size: 14px;
+  padding: 2rem;
+}
+
+.message {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.msgAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.msgBody {
+  flex: 1;
+}
+
+.msgName {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.msgText {
+  font-size: 14px;
+  line-height: 1.7;
+  background: #f5f5f5;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #1a1a1a;
+}
+
+.directive {
+  background: #EBF5FF;
+  color: #0d47a1;
+}
+
+.final {
+  background: #E8F5E9;
+  color: #1b5e20;
+}
+
+.error {
+  background: #FFEBEE;
+  color: #b71c1c;
+}

@@ -8,6 +8,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 모델명을 claude-3-5-sonnet-20241022로 변경
+    const body = { ...req.body };
+    if (!body.model) body.model = 'claude-3-5-sonnet-20241022';
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -15,18 +19,18 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(body),
     });
 
     const data = await response.json();
 
     if (data.error) {
-      return res.status(400).json({ error: data.error.message || 'Anthropic 오류' });
+      return res.status(400).json({ error: data.error.message || 'Anthropic 오류', raw: data });
     }
 
     const text = data.content?.[0]?.text;
     if (!text) {
-      return res.status(500).json({ error: '응답 파싱 실패: ' + JSON.stringify(data) });
+      return res.status(500).json({ error: '응답 파싱 실패', raw: data });
     }
 
     res.status(200).json({ content: [{ text }] });

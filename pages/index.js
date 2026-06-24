@@ -105,7 +105,7 @@ export default function Home() {
   const callClaude = async (system, messages) => {
     const res = await fetch('/api/chat', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system, messages }),
+      body: JSON.stringify({ model:'claude-3-5-sonnet-20241022', max_tokens:1000, system, messages }),
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);

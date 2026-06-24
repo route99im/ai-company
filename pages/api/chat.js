@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   try {
     // 모델명을 claude-3-5-sonnet-20241022로 변경
     const body = { ...req.body };
-    if (!body.model) body.model = 'claude-3-5-sonnet-20241022';
+    if (!body.model) body.model = 'claude-3-haiku-20240307';
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

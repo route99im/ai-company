@@ -148,9 +148,10 @@ export default function Home() {
         callClaude(AGENTS[id].persona, [{role:'user',content:`CEO 지시: ${tk}\n전체 업무: ${t}`}])
       ));
 
-      teams.forEach(({id},i)=>{
+      teams.forEach(({id, task: agentTask},i)=>{
         setSt(id,'done'); setBubble(id, results[i]?.slice(0,26)+'...');
-        setChats(prev=>{ const u={...prev,[id]:[...(prev[id]||[]),{role:'assistant',content:results[i],ts:Date.now()}]}; saveLS(CHAT_KEY,u); return u; });
+        setChats(prev=>{ const u={...prev,[id]:[...(prev[id]||[]),{ role:'user', content:`[전체 지시] ${agentTask}`, ts:Date.now()-1 },
+                                                {role:'assistant',content:results[i],ts:Date.now()}]}; saveLS(CHAT_KEY,u); return u; });
         setTimeout(()=>setBubble(id,null),4000);
       });
       setTimeout(()=>setBubble('ceo',null),4000);

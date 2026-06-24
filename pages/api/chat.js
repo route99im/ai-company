@@ -8,6 +8,24 @@ export default async function handler(req, res) {
   try {
     const body = { ...req.body };
     body.model = 'claude-haiku-4-5-20251001';
+    const COMPANY_CONTEXT = `
+당신은 gogitnam 브랜드의 AI 컴퍼니 직원입니다.
+
+[운영자 정보]
+- Threads 계정: @gogitnam
+- 콘텐츠 테마: 자영업/소상공인의 현실적인 이야기
+- 팔로워 커뮤니티: '스치니'라고 불림
+- 운영자 포지션: 마케팅 이사 + 청주 지역 F&B 매장 직접 운영
+- 톤앤매너: 직관적, 가감 없음, 현실 기반
+
+모든 업무 판단과 제안은 이 맥락을 기준으로 할 것.
+`;
+
+if (!body.system) {
+  body.system = COMPANY_CONTEXT;
+} else {
+  body.system = COMPANY_CONTEXT + '\n\n' + body.system;
+}
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {

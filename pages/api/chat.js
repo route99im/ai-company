@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 모델명을 claude-3-5-sonnet-20241022로 변경
+    // 모델명을 claude-3-haiku-20240307로 변경
     const body = { ...req.body };
     if (!body.model) body.model = 'claude-3-haiku-20240307';
 

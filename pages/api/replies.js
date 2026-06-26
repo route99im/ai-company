@@ -15,7 +15,7 @@ export default function Replies() {
 
   useEffect(() => {
     fetchReplies();
-    const t = setInterval(fetchReplies, 10000); // 10초마다 갱신
+    const t = setInterval(fetchReplies, 10000);
     return () => clearInterval(t);
   }, []);
 
@@ -67,14 +67,17 @@ export default function Replies() {
             <>
               <div style={s.draft}>{r.editedDraft || r.draft}</div>
               <div style={s.btnRow}>
-                <button style={s.btnApprove} onClick={() => action(r.id, 'approve')}
+                <button style={s.btnApprove}
+                  onClick={() => action(r.id, 'approve')}
                   disabled={!!actionLoading}>
                   {actionLoading === r.id + 'approve' ? '...' : '✅ 게시'}
                 </button>
-                <button style={s.btnEdit} onClick={() => { setEditing(r.id); setEditText(r.editedDraft || r.draft); }}>
+                <button style={s.btnEdit}
+                  onClick={() => { setEditing(r.id); setEditText(r.editedDraft || r.draft); }}>
                   ✏️ 수정
                 </button>
-                <button style={s.btnSkip} onClick={() => action(r.id, 'skip')}
+                <button style={s.btnSkip}
+                  onClick={() => action(r.id, 'skip')}
                   disabled={!!actionLoading}>
                   ❌
                 </button>

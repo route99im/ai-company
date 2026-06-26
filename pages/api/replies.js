@@ -7,7 +7,7 @@ export default function Replies() {
   const [editText, setEditText] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
 
-  const fetch replies = async () => {
+  const fetchReplies = async () => {
     const res = await fetch('/api/handle-reply');
     setReplies(await res.json());
     setLoading(false);

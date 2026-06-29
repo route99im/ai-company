@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/poll-replies",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}

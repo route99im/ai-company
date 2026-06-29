@@ -3,9 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 const DEFAULT_AGENTS = {
   alex: { id:'alex', name:'준혁', role:'CEO', color:'#f97316', bg:'#1a0e08' },
   sara: { id:'sara', name:'하은', role:'마케팅팀', color:'#eab308', bg:'#1a1808' },
-  jin:  { id:'jin',  name:'민준',  role:'전략기획팀', color:'#22c55e', bg:'#081a0e' },
-  mia:  { id:'mia',  name:'서연',  role:'콘텐츠팀', color:'#a855f7', bg:'#14081a' },
-  kai:  { id:'kai',  name:'도현',  role:'데이터분석팀', color:'#3b82f6', bg:'#08101a' },
+  jin:  { id:'jin',  name:'민준', role:'전략기획팀', color:'#22c55e', bg:'#081a0e' },
+  mia:  { id:'mia',  name:'서연', role:'콘텐츠팀', color:'#a855f7', bg:'#14081a' },
+  kai:  { id:'kai',  name:'도현', role:'데이터분석팀', color:'#3b82f6', bg:'#08101a' },
 };
 
 const PERSONAS = {
@@ -228,7 +228,6 @@ export default function Home() {
   return (
     <div style={{ background:'#1a1610', minHeight:'100vh', display:'flex', flexDirection:'column', fontFamily:'sans-serif' }}>
 
-      {/* 탑바 */}
       <div style={{ background:'#111008', borderBottom:'0.5px solid #2a2520', padding:'0 14px', height:38, display:'flex', alignItems:'center', justifyContent:'space-between', flexShrink:0 }}>
         <div style={{ fontSize:12, fontWeight:500, color:'#e8e0d0', display:'flex', alignItems:'center', gap:7 }}>
           <div style={{ width:7, height:7, borderRadius:'50%', background:'#c8a96e' }}/>
@@ -249,7 +248,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 오피스 맵 */}
       <div style={{ flexShrink:0, height:190, background:'#1e1a14', position:'relative', borderBottom:'2px solid #2a2520', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:14, left:'50%', transform:'translateX(-50%)' }}>
           <DeskItem id="alex" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }}/>
@@ -288,17 +286,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 통계 바 */}
       <div style={{ flexShrink:0, background:'#111008', borderBottom:'2px solid #2a2520', padding:'7px 14px', display:'flex', gap:14 }}>
         <StatBar label="업무 지시" val={tasks.total} total={Math.max(tasks.total,1)} color="#c8a96e" sub={`총 ${tasks.total}건 분배`}/>
         <StatBar label="진행 현황" val={tasks.working} total={Math.max(tasks.total,1)} color="#3b82f6" sub={`${tasks.working}건 진행 중`}/>
         <StatBar label="완료 현황" val={tasks.done} total={Math.max(tasks.total,1)} color="#22c55e" sub={`완료율 ${tasks.total?Math.round(tasks.done/tasks.total*100):0}%`}/>
       </div>
 
-      {/* 하단 패널 */}
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', flex:1, overflow:'hidden', minHeight:0 }}>
 
-        {/* 전체 지시 (왼쪽) */}
         <div style={{ background:'#141210', borderRight:'2px solid #2a2520', display:'flex', flexDirection:'column', overflow:'hidden' }}>
           <div style={{ padding:'7px 12px', borderBottom:'1px solid #2a2520', display:'flex', alignItems:'center', gap:8, flexShrink:0, background:'#0f0d08' }}>
             <span style={{ fontSize:7, textTransform:'uppercase', letterSpacing:'0.08em', padding:'2px 6px', borderRadius:3, fontWeight:500, background:'#c8a96e14', color:'#c8a96e', border:'0.5px solid #c8a96e33' }}>전체 지시</span>
@@ -349,7 +344,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 1대1 채팅 (오른쪽) */}
         <div style={{ background:'#141210', display:'flex', flexDirection:'column', overflow:'hidden' }}>
           <div style={{ padding:'7px 12px', borderBottom:'1px solid #2a2520', display:'flex', alignItems:'center', gap:8, flexShrink:0, background:'#0f0d08' }}>
             <span style={{ fontSize:7, textTransform:'uppercase', letterSpacing:'0.08em', padding:'2px 6px', borderRadius:3, fontWeight:500, background:`${a?.color||'#666'}14`, color:a?.color||'#666', border:`0.5px solid ${a?.color||'#666'}33` }}>1대1</span>
@@ -418,7 +412,6 @@ export default function Home() {
               </div>
             </>
           ) : (
-            /* 학습 메모리 탭 */
             <div style={{ flex:1, overflow:'auto', padding:'10px 12px' }}>
               <div style={{ fontSize:8, color:'#444', textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:8 }}>
                 {a?.name}의 누적 학습 {mem?.learnings?.length||0}건
@@ -446,7 +439,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 신규 직원 온보딩 모달 */}
       {showOnboard && (
         <div style={{ position:'fixed', inset:0, background:'#00000088', display:'flex', alignItems:'center', justifyContent:'center', zIndex:100 }}>
           <div style={{ background:'#1a1610', border:'0.5px solid #2a2520', borderRadius:12, padding:24, width:320 }}>
@@ -488,7 +480,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <div style={{ fontSize:8, color:'#555', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.06em' }}>Alex의 온보딩 브리핑</div>
+                <div style={{ fontSize:8, color:'#555', marginBottom:6, textTransform:'uppercase', letterSpacing:'0.06em' }}>준혁의 온보딩 브리핑</div>
                 <div style={{ background:'#111008', borderRadius:6, padding:'8px 10px', fontSize:9, color:'#888', lineHeight:1.6, marginBottom:14, maxHeight:200, overflow:'auto' }}>
                   {onboardResult}
                 </div>

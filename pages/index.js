@@ -55,8 +55,8 @@ function DeskItem({ id, agents, states, selected, setSelected }) {
         opacity: isDone ? 0.6 : 1,
       }}>
         <div style={{ fontSize:13 }}>🤖</div>
-        <div style={{ fontSize:7, fontWeight:500, color: isSel||isWork ? a.color : '#666' }}>{a.name}</div>
-        <div style={{ fontSize:6, color: isWork ? '#22c55e' : isDone ? '#22c55e88' : '#2a2520' }}>
+        <div style={{ fontSize:10, fontWeight:500, color: isSel||isWork ? a.color : '#666' }}>{a.name}</div>
+        <div style={{ fontSize:9, color: isWork ? '#22c55e' : isDone ? '#22c55e88' : '#2a2520' }}>
           {isWork ? (s.task||'작업 중') : isDone ? '완료' : '대기'}
         </div>
       </div>
@@ -248,26 +248,26 @@ export default function Home() {
         </div>
       </div>
 
-      <div style={{ flexShrink:0, height:190, background:'#1e1a14', position:'relative', borderBottom:'2px solid #2a2520', overflow:'hidden' }}>
+      <div style={{ flexShrink:0, height:300, background:'#1e1a14', position:'relative', borderBottom:'2px solid #2a2520', overflow:'hidden' }}>
         <div style={{ position:'absolute', top:14, left:'50%', transform:'translateX(-50%)' }}>
           <DeskItem id="alex" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }}/>
         </div>
-        <RoomBox label="마케팅팀" style={{ top:78, left:12, width:170, height:95, borderColor:selected==='sara'?'#eab30844':'#2a2520' }}>
+        <RoomBox label="마케팅팀" style={{ top:100, left:12, width:170, height:120, borderColor:selected==='sara'?'#eab30844':'#2a2520' }}>
           <div style={{ position:'absolute', top:18, left:8 }}>
             <DeskItem id="sara" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }}/>
           </div>
         </RoomBox>
-        <RoomBox label="전략기획팀" style={{ top:78, left:194, width:170, height:95, borderColor:selected==='jin'?'#22c55e44':'#2a2520' }}>
+        <RoomBox label="전략기획팀" style={{ top:100, left:194, width:170, height:120, borderColor:selected==='jin'?'#22c55e44':'#2a2520' }}>
           <div style={{ position:'absolute', top:18, left:8 }}>
             <DeskItem id="jin" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }}/>
           </div>
         </RoomBox>
-        <RoomBox label="콘텐츠팀" style={{ top:78, left:376, width:155, height:95, borderColor:selected==='mia'?'#a855f744':'#2a2520' }}>
+        <RoomBox label="콘텐츠팀" style={{ top:100, left:376, width:155, height:120, borderColor:selected==='mia'?'#a855f744':'#2a2520' }}>
           <div style={{ position:'absolute', top:18, left:8 }}>
             <DeskItem id="mia" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }}/>
           </div>
         </RoomBox>
-        <RoomBox label="데이터분석팀" style={{ top:78, right:12, width:155, height:95, borderColor:selected==='kai'?'#3b82f644':'#2a2520' }}>
+        <RoomBox label="데이터분석팀" style={{ top:100, right:12, width:155, height:120, borderColor:selected==='kai'?'#3b82f644':'#2a2520' }}>
           <div style={{ position:'absolute', top:18, left:8 }}>
             <DeskItem id="kai" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }}/>
           </div>

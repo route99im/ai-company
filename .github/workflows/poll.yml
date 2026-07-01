@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '*/3 * * * *'
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   poll:
@@ -11,6 +14,14 @@ jobs:
     steps:
       - name: Call poll-replies API
         run: |
-          curl -X GET \
+          curl -s -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://ai-company-flame.vercel.app/api/poll-replies
+            https://route99-ai-company.vercel.app/api/poll-replies || true
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Trigger Vercel Deploy
+        run: |
+          curl -s -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"

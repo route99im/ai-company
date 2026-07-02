@@ -1,11 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 
 const DEFAULT_AGENTS = {
-  alex: { id:'alex', name:'준혁', role:'CEO', color:'#f97316', bg:'#1a0e08' },
-  sara: { id:'sara', name:'하은', role:'마케팅팀', color:'#eab308', bg:'#1a1808' },
-  jin:  { id:'jin',  name:'민준', role:'전략기획팀', color:'#22c55e', bg:'#081a0e' },
-  mia:  { id:'mia',  name:'서연', role:'콘텐츠팀', color:'#a855f7', bg:'#14081a' },
-  kai:  { id:'kai',  name:'도현', role:'데이터분석팀', color:'#3b82f6', bg:'#08101a' },
+  alex: { id:'alex', name:'준혁', role:'CEO', color:'#f97316', bg:'#1a0e08', team:'ceo' },
+  sara: { id:'sara', name:'하은', role:'마케팅팀', color:'#eab308', bg:'#1a1808', team:'marketing' },
+  jin:  { id:'jin',  name:'민준', role:'전략기획팀', color:'#22c55e', bg:'#081a0e', team:'strategy' },
+  mia:  { id:'mia',  name:'서연', role:'콘텐츠팀', color:'#a855f7', bg:'#14081a', team:'content' },
+  kai:  { id:'kai',  name:'도현', role:'데이터분석팀', color:'#3b82f6', bg:'#08101a', team:'data' },
+};
+
+const DEFAULT_TEAMS = {
+  ceo:       { label:'CEO', color:'#f97316' },
+  marketing: { label:'마케팅팀', color:'#eab308' },
+  strategy:  { label:'전략기획팀', color:'#22c55e' },
+  content:   { label:'콘텐츠팀', color:'#a855f7' },
+  data:      { label:'데이터분석팀', color:'#3b82f6' },
 };
 
 const PERSONAS = {
@@ -17,41 +25,16 @@ const PERSONAS = {
 };
 
 const DARK = {
-  appBg: '#0f0f1a',
-  topbarBg: '#13131f',
-  officeBg: '#16162a',
-  panelBg: '#13131f',
-  inputBg: '#0f0f1a',
-  cardBg: '#1a1a2e',
-  border: '#2a2a45',
-  text: '#e0e0ff',
-  textSub: '#7070aa',
-  textMuted: '#404068',
-  accent: '#7c6fff',
+  appBg:'#0f0f1a', topbarBg:'#13131f', officeBg:'#16162a', panelBg:'#13131f',
+  inputBg:'#0f0f1a', cardBg:'#1a1a2e', border:'#2a2a45', text:'#e0e0ff',
+  textSub:'#7070aa', textMuted:'#404068', accent:'#7c6fff',
 };
 
 const LIGHT = {
-  appBg: '#f4f4ff',
-  topbarBg: '#ffffff',
-  officeBg: '#eeeeff',
-  panelBg: '#ffffff',
-  inputBg: '#f8f8ff',
-  cardBg: '#f0f0ff',
-  border: '#d0d0ee',
-  text: '#1a1a3a',
-  textSub: '#5555aa',
-  textMuted: '#9090bb',
-  accent: '#5c4fff',
+  appBg:'#f4f4ff', topbarBg:'#ffffff', officeBg:'#eeeeff', panelBg:'#ffffff',
+  inputBg:'#f8f8ff', cardBg:'#f0f0ff', border:'#d0d0ee', text:'#1a1a3a',
+  textSub:'#5555aa', textMuted:'#9090bb', accent:'#5c4fff',
 };
-
-function RoomBox({ label, style, children, T }) {
-  return (
-    <div style={{ position:'absolute', border:`1px solid ${T.border}`, borderRadius:10, padding:'8px 12px', ...style }}>
-      <div style={{ fontSize:11, color:T.textSub, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8, fontWeight:600 }}>{label}</div>
-      {children}
-    </div>
-  );
-}
 
 function DeskItem({ id, agents, states, selected, setSelected, T }) {
   const a = agents[id];
@@ -77,17 +60,17 @@ function DeskItem({ id, agents, states, selected, setSelected, T }) {
       ))}
       <div style={{
         width:76, height:68, borderRadius:12,
-        background: isSel ? `${a.color}25` : T.cardBg,
+        background: isSel ? `${a.color}25` : (a.bg||T.cardBg),
         border: isSel ? `2.5px solid ${a.color}` : `1.5px solid ${isWork ? a.color+'66' : T.border}`,
         display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:3,
         opacity: isDone ? 0.5 : 1,
         boxShadow: isSel ? `0 0 12px ${a.color}44` : 'none',
-        transition: 'all 0.2s',
+        transition:'all 0.2s',
       }}>
         <div style={{ fontSize:20 }}>🤖</div>
         <div style={{ fontSize:12, fontWeight:700, color: isSel||isWork ? a.color : T.text }}>{a.name}</div>
-        <div style={{ fontSize:10, fontWeight:500, color: isWork ? '#22c55e' : isDone ? '#22c55e88' : T.textMuted }}>
-          {isWork ? (s.task||'작업 중') : isDone ? '완료 ✓' : '대기'}
+        <div style={{ fontSize:10, fontWeight:500, color: isWork?'#22c55e':isDone?'#22c55e88':T.textMuted }}>
+          {isWork ? (s.task||'작업 중') : isDone ? '완료' : '대기'}
         </div>
       </div>
     </div>
@@ -115,6 +98,7 @@ export default function Home() {
   const T = isDark ? DARK : LIGHT;
 
   const [agents, setAgents] = useState(DEFAULT_AGENTS);
+  const [teams, setTeams] = useState(DEFAULT_TEAMS);
   const [agentStates, setAgentStates] = useState(
     Object.fromEntries(Object.keys(DEFAULT_AGENTS).map(id => [id, { status:'idle', task:'', collabs:[] }]))
   );
@@ -130,9 +114,10 @@ export default function Home() {
   const [cLoading, setCLoading] = useState(false);
   const [bAgents, setBAgents] = useState(Object.keys(DEFAULT_AGENTS));
   const [showOnboard, setShowOnboard] = useState(false);
-  const [newAgent, setNewAgent] = useState({ id:'', name:'', role:'', color:'#6366f1' });
+  const [newAgent, setNewAgent] = useState({ id:'', name:'', role:'', color:'#6366f1', team:'', newTeamName:'' });
   const [onboarding, setOnboarding] = useState(false);
   const [onboardResult, setOnboardResult] = useState('');
+  const [useNewTeam, setUseNewTeam] = useState(false);
   const msgsRef = useRef(null);
 
   const fetchMemory = async (agentId) => {
@@ -238,25 +223,45 @@ export default function Home() {
 
   const handleOnboard = async () => {
     if (!newAgent.id || !newAgent.name || !newAgent.role) return;
+    const teamId = useNewTeam ? newAgent.id + '_team' : (newAgent.team || 'data');
+    const teamLabel = useNewTeam ? newAgent.newTeamName : (teams[newAgent.team]?.label || newAgent.team);
     setOnboarding(true);
     try {
       const r = await fetch('/api/onboard', {
         method:'POST', headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify({ newAgent }),
+        body: JSON.stringify({ newAgent: { ...newAgent, team: teamId } }),
       });
       const data = await r.json();
       setOnboardResult(data.brief);
-      setAgents(prev => ({ ...prev, [newAgent.id]: { ...newAgent, bg: isDark?'#0a0a1a':'#f0f0ff' } }));
+      const agentData = { ...newAgent, team: teamId, bg: isDark?'#0a0a1a':'#f0f0ff' };
+      setAgents(prev => ({ ...prev, [newAgent.id]: agentData }));
       setAgentStates(prev => ({ ...prev, [newAgent.id]: { status:'idle', task:'', collabs:[] } }));
       setChats(prev => ({ ...prev, [newAgent.id]: [] }));
       setBAgents(prev => [...prev, newAgent.id]);
+      if (useNewTeam) {
+        setTeams(prev => ({ ...prev, [teamId]: { label: teamLabel, color: newAgent.color } }));
+      }
     } catch(e) { setOnboardResult('온보딩 오류가 발생했어요.'); }
     finally { setOnboarding(false); }
   };
 
+  // 팀별 직원 그루핑
+  const agentsByTeam = Object.values(agents).reduce((acc, ag) => {
+    const t = ag.team || 'data';
+    if (!acc[t]) acc[t] = [];
+    acc[t].push(ag);
+    return acc;
+  }, {});
+
   const a = agents[selected];
   const s = agentStates[selected];
   const mem = memory[selected];
+
+  // 팀 위치 계산 (CEO 제외)
+  const teamKeys = Object.keys(agentsByTeam).filter(t => t !== 'ceo');
+  const OFFICE_WIDTH = 900;
+  const TEAM_GAP = 20;
+  const TEAM_W = Math.min(200, (OFFICE_WIDTH - TEAM_GAP * (teamKeys.length + 1)) / teamKeys.length);
 
   return (
     <div style={{ background:T.appBg, minHeight:'100vh', display:'flex', flexDirection:'column', fontFamily:'-apple-system, BlinkMacSystemFont, sans-serif', transition:'all 0.3s' }}>
@@ -277,9 +282,9 @@ export default function Home() {
           ))}
           <button onClick={() => setIsDark(d => !d)}
             style={{ background:T.cardBg, border:`1px solid ${T.border}`, borderRadius:20, padding:'4px 12px', fontSize:13, color:T.textSub, cursor:'pointer' }}>
-            {isDark ? '☀️ 라이트' : '🌙 다크'}
+            {isDark ? '라이트' : '다크'}
           </button>
-          <button onClick={() => { setShowOnboard(true); setOnboardResult(''); setNewAgent({ id:'', name:'', role:'', color:'#6366f1' }); }}
+          <button onClick={() => { setShowOnboard(true); setOnboardResult(''); setNewAgent({ id:'', name:'', role:'', color:'#6366f1', team:'', newTeamName:'' }); setUseNewTeam(false); }}
             style={{ background:T.accent+'22', border:`1px solid ${T.accent}44`, borderRadius:6, padding:'5px 14px', fontSize:13, fontWeight:500, color:T.accent, cursor:'pointer' }}>
             + 직원 추가
           </button>
@@ -287,35 +292,39 @@ export default function Home() {
       </div>
 
       {/* 오피스 맵 */}
-      <div style={{ flexShrink:0, height:270, background:T.officeBg, position:'relative', borderBottom:`2px solid ${T.border}`, overflow:'hidden' }}>
-        <div style={{ position:'absolute', top:16, left:'50%', transform:'translateX(-50%)' }}>
+      <div style={{ flexShrink:0, height:300, background:T.officeBg, position:'relative', borderBottom:`2px solid ${T.border}`, overflow:'hidden' }}>
+
+        {/* CEO 준혁 - 왼쪽 위 */}
+        <div style={{ position:'absolute', top:16, left:16 }}>
+          <div style={{ fontSize:11, color:T.textSub, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8, fontWeight:600 }}>CEO</div>
           <DeskItem id="alex" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }} T={T}/>
         </div>
-        <RoomBox label="마케팅팀" T={T} style={{ top:105, left:12, width:200, height:140, borderColor:selected==='sara'?`${agents.sara.color}66`:T.border, background: selected==='sara'?`${agents.sara.color}08`:T.topbarBg }}>
-          <div style={{ position:'absolute', top:28, left:12 }}>
-            <DeskItem id="sara" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }} T={T}/>
-          </div>
-        </RoomBox>
-        <RoomBox label="전략기획팀" T={T} style={{ top:105, left:224, width:200, height:140, borderColor:selected==='jin'?`${agents.jin.color}66`:T.border, background: selected==='jin'?`${agents.jin.color}08`:T.topbarBg }}>
-          <div style={{ position:'absolute', top:28, left:12 }}>
-            <DeskItem id="jin" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }} T={T}/>
-          </div>
-        </RoomBox>
-        <RoomBox label="콘텐츠팀" T={T} style={{ top:105, left:436, width:190, height:140, borderColor:selected==='mia'?`${agents.mia.color}66`:T.border, background: selected==='mia'?`${agents.mia.color}08`:T.topbarBg }}>
-          <div style={{ position:'absolute', top:28, left:12 }}>
-            <DeskItem id="mia" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }} T={T}/>
-          </div>
-        </RoomBox>
-        <RoomBox label="데이터분석팀" T={T} style={{ top:105, right:12, width:190, height:140, borderColor:selected==='kai'?`${agents.kai.color}66`:T.border, background: selected==='kai'?`${agents.kai.color}08`:T.topbarBg }}>
-          <div style={{ position:'absolute', top:28, left:12 }}>
-            <DeskItem id="kai" agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }} T={T}/>
-          </div>
-          {Object.keys(agents).filter(id => !DEFAULT_AGENTS[id]).map((id, i) => (
-            <div key={id} style={{ position:'absolute', top:28, left:90+(i*88) }}>
-              <DeskItem id={id} agents={agents} states={agentStates} selected={selected} setSelected={(sid) => { setSelected(sid); setChatTab('chat'); }} T={T}/>
+
+        {/* 각 팀 방 */}
+        {teamKeys.map((teamId, idx) => {
+          const teamAgents = agentsByTeam[teamId] || [];
+          const teamInfo = teams[teamId] || { label: teamId, color: '#666' };
+          const left = TEAM_GAP + idx * (TEAM_W + TEAM_GAP) + 110;
+          const roomW = Math.max(TEAM_W, teamAgents.length * 90 + 20);
+          return (
+            <div key={teamId} style={{
+              position:'absolute', top:80, left,
+              width: roomW, minHeight:190,
+              border:`1.5px solid ${selected && agents[selected]?.team === teamId ? teamInfo.color+'66' : T.border}`,
+              borderRadius:12, padding:'10px 12px',
+              background: selected && agents[selected]?.team === teamId ? `${teamInfo.color}08` : T.topbarBg,
+              transition:'all 0.2s',
+            }}>
+              <div style={{ fontSize:11, color:T.textSub, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12, fontWeight:600 }}>{teamInfo.label}</div>
+              <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+                {teamAgents.map(ag => (
+                  <DeskItem key={ag.id} id={ag.id} agents={agents} states={agentStates} selected={selected} setSelected={(id) => { setSelected(id); setChatTab('chat'); }} T={T}/>
+                ))}
+              </div>
             </div>
-          ))}
-        </RoomBox>
+          );
+        })}
+
         <div style={{ position:'absolute', bottom:10, left:16, display:'flex', gap:16 }}>
           {[['#22c55e','작업 중'],['#3b82f6','협업 중'],[T.textMuted,'대기']].map(([bc,lbl]) => (
             <div key={lbl} style={{ display:'flex', alignItems:'center', gap:5, fontSize:11, color:T.textSub }}>
@@ -376,10 +385,10 @@ export default function Home() {
               <textarea value={bInput} onChange={e=>setBInput(e.target.value)}
                 onKeyDown={e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); handleBroadcast(); }}}
                 disabled={bLoading} placeholder="이번 주 콘텐츠 전략 짜줘..." rows={3}
-                style={{ flex:1, background:T.cardBg, border:`1.5px solid ${T.border}`, borderRadius:10, padding:'10px 14px', fontSize:14, color:T.text, outline:'none', resize:'none', lineHeight:1.6, transition:'border-color 0.2s' }}/>
+                style={{ flex:1, background:T.cardBg, border:`1.5px solid ${T.border}`, borderRadius:10, padding:'10px 14px', fontSize:14, color:T.text, outline:'none', resize:'none', lineHeight:1.6 }}/>
               <button onClick={handleBroadcast} disabled={bLoading}
-                style={{ background:T.accent, border:'none', borderRadius:10, padding:'0 22px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer', whiteSpace:'nowrap', minWidth:90, opacity: bLoading?0.6:1, boxShadow:`0 4px 14px ${T.accent}44` }}>
-                {bLoading ? '...' : '전송 →'}
+                style={{ background:T.accent, border:'none', borderRadius:10, padding:'0 22px', fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer', whiteSpace:'nowrap', minWidth:90, opacity:bLoading?0.6:1, boxShadow:`0 4px 14px ${T.accent}44` }}>
+                {bLoading ? '...' : '전송'}
               </button>
             </div>
           </div>
@@ -391,10 +400,10 @@ export default function Home() {
             <span style={{ fontSize:11, textTransform:'uppercase', letterSpacing:'0.08em', padding:'4px 10px', borderRadius:6, fontWeight:700, background:`${a?.color||'#666'}18`, color:a?.color||'#666', border:`1px solid ${a?.color||'#666'}44` }}>1대1</span>
             <div style={{ flex:1 }}>
               <div style={{ fontSize:15, fontWeight:600, color:a?.color||T.text }}>{a?.name} · {a?.role}</div>
-              <div style={{ fontSize:12, color:T.textSub, marginTop:2 }}>{s?.status==='working' ? '🟡 응답 중...' : '⚪ 대기 중'}</div>
+              <div style={{ fontSize:12, color:T.textSub, marginTop:2 }}>{s?.status==='working' ? '응답 중...' : '대기 중'}</div>
             </div>
             <div style={{ display:'flex', gap:6 }}>
-              {[['chat','💬 대화'],['memory','🧠 학습']].map(([tab, label]) => (
+              {[['chat','대화'],['memory','학습']].map(([tab, label]) => (
                 <div key={tab} onClick={() => setChatTab(tab)}
                   style={{ fontSize:12, fontWeight:500, padding:'5px 12px', borderRadius:6, cursor:'pointer', transition:'all 0.15s',
                     background: chatTab===tab ? `${a?.color||'#666'}22` : 'transparent',
@@ -411,7 +420,7 @@ export default function Home() {
             <>
               <div ref={msgsRef} style={{ flex:1, overflow:'auto', padding:'14px 16px', display:'flex', flexDirection:'column', gap:10 }}>
                 {(!chats[selected]||chats[selected].length===0) && (
-                  <div style={{ fontSize:14, color:T.textMuted, textAlign:'center', marginTop:28 }}>{a?.name}에게 말을 걸어보세요 👋</div>
+                  <div style={{ fontSize:14, color:T.textMuted, textAlign:'center', marginTop:28 }}>{a?.name}에게 말을 걸어보세요</div>
                 )}
                 {(chats[selected]||[]).map(m => (
                   <div key={m.id} style={{ display:'flex', gap:10, alignItems:'flex-start', flexDirection:m.role==='user'?'row-reverse':'row' }}>
@@ -460,7 +469,8 @@ export default function Home() {
               </div>
               {!mem?.learnings?.length ? (
                 <div style={{ fontSize:14, color:T.textMuted, textAlign:'center', marginTop:28 }}>
-                  아직 학습 내용이 없어요.<br/>전체 지시를 실행하면 자동으로 쌓여요.
+                  아직 학습 내용이 없어요.
+                  전체 지시를 실행하면 자동으로 쌓여요.
                 </div>
               ) : (
                 [...(mem.learnings||[])].reverse().map((l, i) => (
@@ -484,14 +494,14 @@ export default function Home() {
       {/* 신규 직원 모달 */}
       {showOnboard && (
         <div style={{ position:'fixed', inset:0, background:'#00000066', display:'flex', alignItems:'center', justifyContent:'center', zIndex:100 }}>
-          <div style={{ background:T.panelBg, border:`1px solid ${T.border}`, borderRadius:16, padding:30, width:380, boxShadow:'0 20px 60px #00000033' }}>
+          <div style={{ background:T.panelBg, border:`1px solid ${T.border}`, borderRadius:16, padding:30, width:400, boxShadow:'0 20px 60px #00000033', maxHeight:'90vh', overflow:'auto' }}>
             <div style={{ fontSize:18, fontWeight:700, color:T.text, marginBottom:22 }}>신규 직원 추가</div>
             {!onboardResult ? (
               <>
                 {[
                   { key:'id', label:'ID (영문 소문자)', placeholder:'예: yuna' },
                   { key:'name', label:'이름', placeholder:'예: 유나' },
-                  { key:'role', label:'역할', placeholder:'예: 디자인팀' },
+                  { key:'role', label:'직책', placeholder:'예: 시니어 디자이너' },
                 ].map(f => (
                   <div key={f.key} style={{ marginBottom:16 }}>
                     <div style={{ fontSize:12, color:T.textSub, marginBottom:6, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.06em' }}>{f.label}</div>
@@ -501,6 +511,46 @@ export default function Home() {
                       style={{ width:'100%', background:T.cardBg, border:`1.5px solid ${T.border}`, borderRadius:8, padding:'9px 12px', fontSize:14, color:T.text, outline:'none', boxSizing:'border-box' }}/>
                   </div>
                 ))}
+
+                {/* 소속 팀 선택 */}
+                <div style={{ marginBottom:16 }}>
+                  <div style={{ fontSize:12, color:T.textSub, marginBottom:6, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.06em' }}>소속 팀</div>
+                  <div style={{ display:'flex', gap:6, marginBottom:8, flexWrap:'wrap' }}>
+                    <div onClick={() => setUseNewTeam(false)}
+                      style={{ padding:'4px 10px', borderRadius:6, fontSize:12, fontWeight:600, border:`1.5px solid`, cursor:'pointer',
+                        background: !useNewTeam ? `${T.accent}22` : 'transparent',
+                        color: !useNewTeam ? T.accent : T.textMuted,
+                        borderColor: !useNewTeam ? `${T.accent}66` : T.border,
+                      }}>기존 팀</div>
+                    <div onClick={() => setUseNewTeam(true)}
+                      style={{ padding:'4px 10px', borderRadius:6, fontSize:12, fontWeight:600, border:`1.5px solid`, cursor:'pointer',
+                        background: useNewTeam ? `${T.accent}22` : 'transparent',
+                        color: useNewTeam ? T.accent : T.textMuted,
+                        borderColor: useNewTeam ? `${T.accent}66` : T.border,
+                      }}>새 팀 만들기</div>
+                  </div>
+                  {!useNewTeam ? (
+                    <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                      {Object.entries(teams).filter(([id]) => id !== 'ceo').map(([id, team]) => (
+                        <div key={id} onClick={() => setNewAgent(prev => ({ ...prev, team: id }))}
+                          style={{ padding:'5px 12px', borderRadius:6, fontSize:13, fontWeight:600, border:'1.5px solid', cursor:'pointer',
+                            background: newAgent.team===id ? `${team.color}22` : 'transparent',
+                            color: newAgent.team===id ? team.color : T.textMuted,
+                            borderColor: newAgent.team===id ? `${team.color}66` : T.border,
+                          }}>
+                          {team.label}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <input value={newAgent.newTeamName}
+                      onChange={e => setNewAgent(prev => ({ ...prev, newTeamName: e.target.value }))}
+                      placeholder="새 팀 이름 (예: 디자인팀)"
+                      style={{ width:'100%', background:T.cardBg, border:`1.5px solid ${T.border}`, borderRadius:8, padding:'9px 12px', fontSize:14, color:T.text, outline:'none', boxSizing:'border-box' }}/>
+                  )}
+                </div>
+
+                {/* 색상 */}
                 <div style={{ marginBottom:20 }}>
                   <div style={{ fontSize:12, color:T.textSub, marginBottom:8, fontWeight:600, textTransform:'uppercase', letterSpacing:'0.06em' }}>색상</div>
                   <div style={{ display:'flex', gap:10 }}>
@@ -510,6 +560,7 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
+
                 <div style={{ display:'flex', gap:10 }}>
                   <button onClick={() => setShowOnboard(false)}
                     style={{ flex:1, padding:'11px 0', background:'transparent', border:`1.5px solid ${T.border}`, borderRadius:10, fontSize:14, color:T.textSub, cursor:'pointer' }}>
@@ -517,7 +568,7 @@ export default function Home() {
                   </button>
                   <button onClick={handleOnboard} disabled={onboarding}
                     style={{ flex:1, padding:'11px 0', background:T.accent, border:'none', borderRadius:10, fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer', boxShadow:`0 4px 14px ${T.accent}44` }}>
-                    {onboarding ? '온보딩 중...' : '추가 →'}
+                    {onboarding ? '온보딩 중...' : '추가'}
                   </button>
                 </div>
               </>
@@ -527,9 +578,9 @@ export default function Home() {
                 <div style={{ background:T.cardBg, borderRadius:10, padding:'12px 14px', fontSize:14, color:T.text, lineHeight:1.7, marginBottom:20, maxHeight:220, overflow:'auto' }}>
                   {onboardResult}
                 </div>
-                <button onClick={() => { setShowOnboard(false); setNewAgent({ id:'', name:'', role:'', color:'#6366f1' }); setOnboardResult(''); }}
+                <button onClick={() => { setShowOnboard(false); setNewAgent({ id:'', name:'', role:'', color:'#6366f1', team:'', newTeamName:'' }); setOnboardResult(''); }}
                   style={{ width:'100%', padding:'11px 0', background:'#22c55e', border:'none', borderRadius:10, fontSize:14, fontWeight:700, color:'#fff', cursor:'pointer' }}>
-                  완료 ✓
+                  완료
                 </button>
               </>
             )}
